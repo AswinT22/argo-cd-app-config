@@ -3,7 +3,7 @@ kind: Kustomization
 
 helmCharts:
 - name: ingress-nginx
-  version: 5.0.0
+  version: 4.4.2
   repo: https://kubernetes.github.io/ingress-nginx
   releaseName: mvd
   namespace: nginx
