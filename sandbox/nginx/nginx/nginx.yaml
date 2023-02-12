@@ -10,7 +10,7 @@ helmCharts:
       difficulty: hard
       rcon:
         enabled: true
-  releaseName: moria
+  releaseName: nginx
   version: 3.1.3
   repo: https://itzg.github.io/minecraft-server-charts
     
