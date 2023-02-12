@@ -1,23 +1,39 @@
 apiVersion: argoproj.io/v1alpha1
-kind: Application
+kind: ApplicationSet
 metadata:
-  name: myapp-argo-application
-  namespace: argocd
+  name: apps
 spec:
-  project: default
+  generators:
+  - matrix:
+      generators:
+        - list:
+            elements:
+              - environment: sandbox
 
-  source:
-    repoURL: https://github.com/AswinT22/argo-cd-app-config
-    targetRevision: HEAD
-    path: dev
-  destination: 
-    server: https://kubernetes.default.svc
-    namespace: myapp
-
-  syncPolicy:
-    syncOptions:
-    - CreateNamespace=true
-
-    automated:
-      selfHeal: true
-      prune: true
+        - git:
+            repoURL: https://github.com/AswinT22/argo-cd-app-config.git
+            revision: main
+            directories:
+              - path: '{{environment}}/*/*'
+  template:
+    metadata:
+      name: '{{path[2]}}-{{environment}}'
+      annotations:
+        argocd.argoproj.io/manifest-generate-paths: .
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/AswinT22/argo-cd-app-config.git
+        targetRevision: main
+        path: '{{path}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{path[1]}}'
+      syncPolicy:
+        syncOptions:
+        - CreateNamespace=true
+        automated:
+          selfHeal: true
+          prune: true
